@@ -423,19 +423,8 @@
     </emission>
   </animation>
 
-  <effect>
-    <name>f14panel</name>
-    <inherits-from>Effects/f14panel</inherits-from>
-    <object-name>mount</object-name>
-  </effect>
-  <effect>
-    <name>f14panel-knob</name>
-    <inherits-from>Effects/f14panel-knob</inherits-from>
-    <object-name>brt-knob</object-name>
-    <object-name>mode-knob</object-name>
-    <object-name>function-knob</object-name>
-    <object-name>vol-knob</object-name>
-  </effect>
+  
+  
   <animation>
 		<object-name>switches-and-knobs</object-name>
 		<type>material</type>

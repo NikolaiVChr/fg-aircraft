@@ -226,22 +226,6 @@
         <texture-prop>texture</texture-prop>
         <texture>livery.AF80-0007.png</texture>
     </animation>
-    <effect>
-        <name>f15interior</name>
-        <object-name>StandbyCompassMount</object-name>
-        <inherits-from>Cockpit/Effects/f15interior</inherits-from>
-        <object-name>CanopyMirrors</object-name >
-        <object-name>CanopyWire</object-name >
-        <object-name>CanopyLockShootLight</object-name>
-        <object-name>WindscreenCanopyFrame</object-name>
-        <object-name>Canopy</object-name>
-        <object-name>CanopyBackCover</object-name>
-        <object-name>CanopyFasteners</object-name>
-        <object-name>WindscreenFasteners</object-name>
-        <object-name>CanopyRefuelReadyLightLamp</object-name>
-        <object-name>CanopyLockShootLightLamp</object-name>
-        <object-name>CanopyLockShootLight</object-name>
-        <object-name>CanopyRefuelReadyLight</object-name>
-    </effect>
+    
 
 </PropertyList>

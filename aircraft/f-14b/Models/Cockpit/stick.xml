@@ -76,10 +76,6 @@
 		</emission>
 	</animation>
 
-        <effect>
-            <name>f14-interior</name>
-            <inherits-from>Effects/f14interior</inherits-from>
-            <object-name>stick-group</object-name>
-        </effect>
+        
 
     </PropertyList>

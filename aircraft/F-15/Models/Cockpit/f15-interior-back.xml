@@ -372,17 +372,6 @@
             <z>0</z>
         </axis>
     </animation>
-    <effect>
-        <name>f15interior</name>
-        <inherits-from>Cockpit/Effects/f15interior</inherits-from>
-        <object-name>GlareShield</object-name>
-        <object-name>HudGlareShield</object-name>
-        <object-name>rudder-pedal-right</object-name>
-        <object-name>rudder-pedal-left</object-name>
-        <object-name>backseat-instrument-panel</object-name>
-        <object-name>InteriorBucket</object-name>
-        <object-name>seat-cushion</object-name>
-        <object-name>aces2</object-name>
-    </effect>
+    
 
 </PropertyList>

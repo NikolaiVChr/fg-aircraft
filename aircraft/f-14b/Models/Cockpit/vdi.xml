@@ -879,15 +879,8 @@
   </animation>
 
   <!-- implicit ALS lighting see http://wiki.flightgear.org/ALS_technical_notes -->
-  <effect>
-    <name>f14panel</name>
-    <inherits-from>Effects/f14panel</inherits-from>
-    <object-name>mount</object-name>
-  </effect>
-  <effect>
-    <name>f14panel-knob</name>
-    <inherits-from>Effects/f14panel-knob</inherits-from>
-  </effect>
+  
+  
 
   <animation>
 		<object-name>warnings</object-name>
