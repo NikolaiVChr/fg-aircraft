@@ -25,11 +25,6 @@ ref: https://www.youtube.com/watch?v=ZC_DIf5SSmM
         <augmentation-ignition>sim/multiplay/generic/float[8]</augmentation-ignition>
     </params>
 
-    <model>
-        <path>als-flame.xml</path>
-        <name>ALS-FlameTrail</name>
-    </model>
-
     <offsets>
         <z-m>0.0</z-m>
     </offsets>
@@ -67,16 +62,6 @@ ref: https://www.youtube.com/watch?v=ZC_DIf5SSmM
                 <property alias="/params/augmentation-ignition"/>
                 <value>1</value>
             </greater-than-equals>
-        </condition>
-    </animation>
-    <animation>
-        <type>select</type>
-        <object-name>ALS-FlameTrail</object-name>
-        <condition>
-            <greater-than>
-                <property alias="/params/augmentation-ignition"/>
-                <value>0.8</value>
-            </greater-than>
         </condition>
     </animation>
     <animation>
@@ -160,20 +145,6 @@ ref: https://www.youtube.com/watch?v=ZC_DIf5SSmM
         <x-factor>0.26</x-factor>
         <y-factor>0.26</y-factor>
         <z-factor>0.2</z-factor>
-    </animation>
-
-    <animation>
-        <type>scale</type>
-        <object-name>ALS-FlameTrail</object-name>
-        <property alias="/params/augmentation-alight"/>
-        <x-min>0.2</x-min>
-        <y-min>0.3</y-min>
-        <z-min>0.3</z-min>
-        <y-max>1</y-max>
-        <z-max>1</z-max>
-        <x-factor>0.472</x-factor>
-        <y-factor>0.6</y-factor>
-        <z-factor>0.6</z-factor>
     </animation>
 
     <animation>

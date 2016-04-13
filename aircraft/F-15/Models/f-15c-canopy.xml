@@ -18,17 +18,6 @@
         </condition>
         <object-name>f15c-canopy</object-name>
     </animation>
-    <!-- Uncomment this section for FG 3.5 ALS Glass effects -->
-    <effect>
-        <name>f15glass</name>
-        <inherits-from>Effects/f15glass</inherits-from>
-        <object-name>CanopyGlassInside</object-name>
-    </effect>
-    <effect>
-        <name>f15windshield</name>
-        <inherits-from>Effects/f15windshield</inherits-from>
-        <object-name>WindscreenGlassInside</object-name>
-    </effect>
     <!-- Canopy -->
     <animation>
         <type>select</type>
