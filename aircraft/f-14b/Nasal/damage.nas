@@ -34,6 +34,8 @@ var warhead_lbs = {
     "M71":                 200.00,
     "MK-82":               192.00,
     "LAU-68":               10.00,
+    "M317":                145.00,
+    "GBU-31":              945.00,
   };
 
 var incoming_listener = func {
@@ -527,6 +529,7 @@ var re_init = func {
 setlistener("/sim/signals/reinit", re_init, 0, 0);
 
 var spams = 0;
+var spamList = [];
 
 var defeatSpamFilter = func (str) {
   spams += 1;
@@ -537,5 +540,19 @@ var defeatSpamFilter = func (str) {
   for (var i = 1; i <= spams; i+=1) {
     str = str~".";
   }
-  return str;
+  var newList = [str];
+  for (var i = 0; i < size(spamList); i += 1) {
+    append(newList, spamList[i]);
+  }
+  spamList = newList;  
 }
+
+var spamLoop = func {
+  var spam = pop(spamList);
+  if (spam != nil) {
+    setprop("/sim/multiplay/chat", spam);
+  }
+  settimer(spamLoop, 1.20);
+}
+
+spamLoop();
