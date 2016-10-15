@@ -3,15 +3,15 @@
     <sim>
         <model>
             <livery>
-                <name type="string">TY AF81-0048</name>
+                <name type="string">IAF 235-69 SQ HAMMERS</name>
                 <index type="int">0</index>
-                <texture>liveries/livery.AF81-0048.png</texture>
+                <texture>Liveries/livery.IAF 235-69 SQ HAMMERS.png</texture>
             </livery>
 
             <livery-patch>
-                <name type="string">TY AF81-0048</name>
+                <name type="string">IAF 235-69 SQ HAMMERS</name>
                 <index type="int">0</index>
-                <texture>liveries/patch.tyndall.png</texture>
+                <texture>Liveries/patch.IAF.png</texture>
             </livery-patch>
 
         </model>

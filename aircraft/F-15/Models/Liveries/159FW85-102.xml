@@ -3,15 +3,15 @@
     <sim>
         <model>
             <livery>
-                <name type="string">SJ AF89-0474</name>
+                <name type="string">JZ AF85-102</name>
                 <index type="int">0</index>
-                <texture>liveries/livery.AF89-0474.png</texture>
+                <texture>Liveries/livery.159FW85-102.png</texture>
             </livery>
 
             <livery-patch>
-                <name type="string">SJ AF89-0474</name>
+                <name type="string">JZ AF85-102</name>
                 <index type="int">0</index>
-                <texture>liveries/patch.seymourjohnson.png</texture>
+                <texture>Liveries/patch.bitburg.png</texture>
             </livery-patch>
 
         </model>

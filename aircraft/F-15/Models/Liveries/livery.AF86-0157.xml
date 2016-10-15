@@ -3,15 +3,15 @@
     <sim>
         <model>
             <livery>
-                <name type="string">BT AF80-0007</name>
+                <name type="string">MO AF86-0157</name>
                 <index type="int">0</index>
-                <texture>liveries/livery.AF80-0007.png</texture>
+                <texture>Liveries/livery.AF86-0157.png</texture>
             </livery>
 
             <livery-patch>
-                <name type="string">BT AF80-0007</name>
+                <name type="string">MO AF86-0157</name>
                 <index type="int">0</index>
-                <texture>liveries/patch.bitburg.png</texture>
+                <texture>Liveries/patch.mountainhome.png</texture>
             </livery-patch>
 
         </model>

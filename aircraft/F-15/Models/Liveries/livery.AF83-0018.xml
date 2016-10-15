@@ -3,15 +3,15 @@
     <sim>
         <model>
             <livery>
-                <name type="string">WA AF78-538 Desert</name>
+                <name type="string">MA AF83-0018 (ANG)</name>
                 <index type="int">0</index>
-                <texture>liveries/livery.AF78-538 Aggressor Desert.png</texture>
+                <texture>Liveries/livery.AF83-0018.png</texture>
             </livery>
 
             <livery-patch>
-                <name type="string">WA AF78-538 Desert</name>
+                <name type="string">MA AF83-0018 (ANG)</name>
                 <index type="int">0</index>
-                <texture>liveries/patch.nellis.png</texture>
+                <texture>Liveries/patch.massachusettsang.png</texture>
             </livery-patch>
 
         </model>
