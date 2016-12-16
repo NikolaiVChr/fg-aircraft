@@ -92,13 +92,6 @@ var armament_update = func {
 		S1.set_display(0);
 	}
 	# in cockpit the switches for these pylons are not movable:
-	if ( S2.get_type() == "AIM-54" and stick_s == 3) {
-		append(aim9_seq, S2);
-		S2.set_display(1);
-		aim9_count += 1;
-	} else {
-		S2.set_display(0);
-	}
 	if ( S3.get_type() == "AIM-54" and stick_s == 3) {
 		append(aim9_seq, S3);
 		S3.set_display(1);
@@ -126,13 +119,6 @@ var armament_update = func {
 		aim9_count += 1;
 	} else {
 		S5.set_display(0);
-	}
-	if ( S7.get_type() == "AIM-54" and stick_s == 3) {
-		append(aim9_seq, S7);
-		S7.set_display(1);
-		aim9_count += 1;
-	} else {
-		S7.set_display(0);
 	}
 	if ( S9.get_selected() ) {
 		if ( S8.get_type() == "AIM-9"  and stick_s == 2) {
@@ -216,15 +202,25 @@ var update_sw_ready = func() {
 	var sw_count = SwCount.getValue();
 	#print("SIDEWINDER: sw_count - 1 = ", sw_count - 1);
 	if (StickSelector.getValue() == 2 and ArmSwitch.getValue() == 2) {
+		if (Current_aim9 != nil and Current_aim9.type == "AIM-54") {
+			Current_aim9.status = -1;
+			Current_aim9.del();
+			Current_aim9 = nil;
+		}
 		if ((Current_aim9 == nil or Current_aim9.status == 2)  and sw_count > 0 ) {
 			var pylon = aim9_seq[sw_count - 1];
 			#print("FOX2 new !! ", pylon.index, " sw_count - 1 = ", sw_count - 1);
 			Current_aim9 = armament.AIM.new(pylon.index, "AIM-9", "Sidewinder");
 		} elsif (Current_aim9 != nil and Current_aim9.status == -1) {
 			Current_aim9.status = 0;	
-			Current_aim9.search();	
+			Current_aim9.search();
 		}
 	} elsif (StickSelector.getValue() == 3 and ArmSwitch.getValue() == 2) {
+		if (Current_aim9 != nil and Current_aim9.type == "AIM-9") {
+			Current_aim9.status = -1;
+			Current_aim9.del();
+			Current_aim9 = nil;
+		}
 		if ((Current_aim9 == nil or Current_aim9.status == 2)  and sw_count > 0 ) {
 			var pylon = aim9_seq[sw_count - 1];
 			Current_aim9 = armament.AIM.new(pylon.index, "AIM-54", "Phoenix");
