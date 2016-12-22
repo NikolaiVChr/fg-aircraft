@@ -5,7 +5,7 @@
 ####### License: GPL 2
 #######
 ####### Authors:
-#######  XIII, 5N1N0B1, Nikolai V. Chr.
+#######  Alexis Bory, Fabien Barbier, Justin Nicholson, Nikolai V. Chr.
 ####### 
 ####### In addition, some code is derived from work by:
 #######  David Culp, Vivian Meazza, M. Franz
@@ -16,9 +16,11 @@
 #
 # Firstly make sure you read the comments (line 180+) below for the properties.
 # For laser/gps guided gravity bombs make sure to set the max G very low, like 0.5G, to simulate them slowly adjusting to hit the target.
-# Remember for air to air missiles the speed quoted in litterature is normally the speed above the launch platform. I usually fly at mach 1+ at 20000 ft,
+# Remember for air to air missiles the speed quoted in litterature is normally the speed above the launch platform. I usually fly at the typical usage
+#   regime for that missile, so for example for sidewinder it would be mach 1+ at 20000 ft,
 #   there I make sure it can reach approx the max relative speed. For older missiles the max speed quoted is sometimes absolute speed though, so beware.
-#   Speeds quoted in in unofficial sources can be any of them, but if its around mach 5 its a good bet its absolute, only very few missiles are hypersonic.
+#   If it quotes aerodynamic speed then its the absolute speed. Speeds quoted in in unofficial sources can be any of them,
+#   but if its around mach 5 for A/A its a good bet its absolute, only very few A/A missiles are likely hypersonic.
 # Stage durations is allowed to be 0, so can thrust values. If there is no second stage, instead of just setting stage 2 thrust to 0,
 #   set stage 2 duration to 0 also. For unpowered munitions, set all thrusts to 0.
 # For very low sea skimming missiles, be sure to set terrain following to false, you cannot have it both ways.
@@ -28,8 +30,8 @@
 # If litterature quotes a max distance for a weapon, its a good bet it is under the condition that the target
 #   is approaching the launch platform with high speed and does not evade, and also if the launch platform is an aircraft,
 #   that it also is approaching the target with high speed. In other words, high closing rate. For example the AIM-7, which can hit bombers out at 32 NM,
-#   will often have to be within 3 NM of an escaping target to hit it. Missiles typically have significantly less range against an evading
-#   or escaping target than what is commonly believed. I usually fly at 20000 ft at mach 1, approach a target flying at me with same speed and altitude,
+#   will often have to be within 3 NM of an escaping target to hit it (source). Missiles typically have significantly less range against an evading
+#   or escaping target than what is commonly believed. I typically fly at 20000 ft at mach 1, approach a target flying at me with same speed and altitude,
 #   to test max range.
 # When you test missiles against aircraft, be sure to do it with a framerate of 25+, else they will not hit very good, especially high speed missiles like
 #   Amraam or Phoenix. Also notice they generally not hit so close against Scenario/AI objects compared to MP aircraft due to the way these are updated.
@@ -80,6 +82,9 @@
 # Specify terminal manouvres and preferred impact aspect.
 # Limit guiding if needed so that the missile don't lose sight of target.
 # Change flare to use helicopter property double.
+# Make check for seeker FOV round instead of square, same with check for lock on sun.
+# Consider to average the closing speed in proportional navigation. So get it between second last positions and current, instead of last to currect.
+# Drag coeff due to exhaust.
 #
 # Please report bugs and features to Nikolai V. Chr. | ForumUser: Necolatis | Callsign: Leto
 
@@ -116,7 +121,7 @@ var SURFACE = 2;
 var ORDNANCE = 3;
 
 var g_fps        = 9.80665 * M2FT;
-var slugs_to_lbs = 32.1740485564;
+var slugs_to_lbm = 32.1740485564;
 var const_e = 2.71828183;
 
 var first_in_air = FALSE;# first missile is in the air, other missiles should not write to blade[x].
@@ -180,12 +185,13 @@ var AIM = {
 		m.fcs_fov               = getprop("payload/armament/"~m.type_lc~"/FCS-field-deg") / 2;          # fire control system total field of view
 		m.max_detect_rng        = getprop("payload/armament/"~m.type_lc~"/max-fire-range-nm");          # max range that the FCS allows firing
 		m.max_seeker_dev        = getprop("payload/armament/"~m.type_lc~"/seeker-field-deg") / 2;       # missiles own seekers total FOV
-		m.force_lbs_1           = getprop("payload/armament/"~m.type_lc~"/thrust-lbf-stage-1");         # stage 1 thrust, set both stages to zero to simulate gravity bomb, set them to 1 to simulate glide bomb
-		m.force_lbs_2           = getprop("payload/armament/"~m.type_lc~"/thrust-lbf-stage-2");         # stage 2 thrust
+		m.force_lbf_1           = getprop("payload/armament/"~m.type_lc~"/thrust-lbf-stage-1");         # stage 1 thrust, set both stages to zero to simulate gravity bomb, set them to 1 to simulate glide bomb
+		m.force_lbf_2           = getprop("payload/armament/"~m.type_lc~"/thrust-lbf-stage-2");         # stage 2 thrust
 		m.stage_1_duration      = getprop("payload/armament/"~m.type_lc~"/stage-1-duration-sec");       # stage 1 duration
 		m.stage_2_duration      = getprop("payload/armament/"~m.type_lc~"/stage-2-duration-sec");       # stage 2 duration
-		m.weight_launch_lbs     = getprop("payload/armament/"~m.type_lc~"/weight-launch-lbs");          # total weight of armament
-		m.weight_whead_lbs      = getprop("payload/armament/"~m.type_lc~"/weight-warhead-lbs");         # warhead weight
+		m.weight_launch_lbm     = getprop("payload/armament/"~m.type_lc~"/weight-launch-lbs");          # total weight of armament, including fuel and warhead.
+		m.weight_whead_lbm      = getprop("payload/armament/"~m.type_lc~"/weight-warhead-lbs");         # warhead weight
+		m.weight_fuel_lbm       = getprop("payload/armament/"~m.type_lc~"/weight-fuel-lbm");            # fuel weight [optional]. If this property is not present, it won't lose weight as the fuel is used.
 		m.Cd_base               = getprop("payload/armament/"~m.type_lc~"/drag-coeff");                 # drag coefficient
 		m.eda                   = getprop("payload/armament/"~m.type_lc~"/drag-area");                  # normally is crosssection area of munition (without fins)
 		m.max_g                 = getprop("payload/armament/"~m.type_lc~"/max-g");                      # max G-force the missile can pull at sealevel
@@ -199,6 +205,7 @@ var AIM = {
 		m.vol_track             = getprop("payload/armament/"~m.type_lc~"/vol-track");                  # sound volume when having lock
 		m.vol_track_weak        = getprop("payload/armament/"~m.type_lc~"/vol-track-weak");             # sound volume before getting solid lock
 		m.angular_speed         = getprop("payload/armament/"~m.type_lc~"/seeker-angular-speed-dps");   # only for heat/vision seeking missiles. Max angular speed that the target can move as seen from seeker, before seeker loses lock.
+		m.sun_lock              = getprop("payload/armament/"~m.type_lc~"/lock-on-sun-deg");            # only for heat seeking missiles. If it looks at sun within this angle, it will lose lock on target.
         m.loft_alt              = getprop("payload/armament/"~m.type_lc~"/loft-altitude");              # if 0 then no snap up. Below 10000 then cruise altitude above ground. Above 10000 max altitude it will snap up to.
         m.follow                = getprop("payload/armament/"~m.type_lc~"/terrain-follow");             # used for anti-ship missiles that should be able to terrain follow instead of purely sea skimming.
         m.min_dist              = getprop("payload/armament/"~m.type_lc~"/min-fire-range-nm");          # it wont get solid lock before the target has this range
@@ -426,9 +433,9 @@ var AIM = {
 
 	eject: func () {#GCD
 		me.stage_1_duration = 0;
-		me.force_lbs_1      = 0;
+		me.force_lbf_1      = 0;
 		me.stage_2_duration = 0;
-		me.force_lbs_2      = 0;
+		me.force_lbf_2      = 0;
 		me.arming_time      = 5000;
 		me.rail             = FALSE;
 		me.releaseAtNothing();
@@ -544,7 +551,30 @@ var AIM = {
 		}
 		printf("Launch %s at %s.", me.type, me.callsign);
 
-		me.mass = me.weight_launch_lbs / slugs_to_lbs;
+		me.weight_current = me.weight_launch_lbm;
+		me.mass = me.weight_launch_lbm / slugs_to_lbm;
+
+		# find the fuel consumption - lbm/sec
+		if (me.weight_fuel_lbm == nil) {
+			me.weight_fuel_lbm = 0;
+		}
+		var energy1 = me.force_lbf_1 * me.stage_1_duration;
+		var energy2 = me.force_lbf_2 * me.stage_2_duration;
+		var energyT = energy1 + energy2;
+		var fuel_per_energy = me.weight_fuel_lbm / energyT;
+		me.fuel_per_sec_1  = (fuel_per_energy * energy1) / me.stage_1_duration;
+		me.fuel_per_sec_2  = (fuel_per_energy * energy2) / me.stage_2_duration;
+
+		# find the sun:
+		if(me.guidance == "heat") {
+			var sun_x = getprop("ephemeris/sun/local/x");
+			var sun_y = getprop("ephemeris/sun/local/x");
+			var sun_z = getprop("ephemeris/sun/local/x");
+			me.sun_power = getprop("/rendering/scene/diffuse/red");
+			me.sun = geo.Coord.new(me.ac_init);
+			me.sun.set_xyz(me.sun.x()+sun_x*200000, me.sun.y()+sun_y*200000, me.sun.z()+sun_z*200000);#heat seeking missiles don't fly far, so setting it 200Km away is fine.
+		}
+		me.lock_on_sun = FALSE;
 
 		me.flight();
 		loadNode.remove();
@@ -591,10 +621,10 @@ var AIM = {
 		#
 		me.thrust_lbf = 0;# pounds force (lbf)
 		if (me.life_time > me.drop_time) {
-			me.thrust_lbf = me.force_lbs_1;
+			me.thrust_lbf = me.force_lbf_1;
 		}
 		if (me.life_time > me.stage_1_duration + me.drop_time) {
-			me.thrust_lbf = me.force_lbs_2;
+			me.thrust_lbf = me.force_lbf_2;
 		}
 		if (me.life_time > (me.drop_time + me.stage_1_duration + me.stage_2_duration)) {
 			me.thrust_lbf = 0;
@@ -919,6 +949,18 @@ var AIM = {
 			me.rail_passed = TRUE;
 			#print("rail passed");
 		}
+
+		# consume fuel
+		if (me.life_time > (me.drop_time + me.stage_1_duration + me.stage_2_duration)) {
+			me.weight_current = me.weight_launch_lbm - me.weight_fuel_lbm;
+		} elsif (me.life_time > (me.drop_time + me.stage_1_duration)) {
+			me.weight_current = me.weight_current - me.fuel_per_sec_2 * me.dt;
+		} elsif (me.life_time > me.drop_time) {
+			me.weight_current = me.weight_current - me.fuel_per_sec_1 * me.dt;
+		}
+		#printf("weight %0.1f", me.weight_current);
+		me.mass = me.weight_current / slugs_to_lbm;
+
 		me.last_dt = me.dt;
 		settimer(func me.flight(), update_loop_time, SIM_TIME);		
 	},
@@ -1068,6 +1110,8 @@ var AIM = {
 
 		me.checkForFlare();
 
+		me.checkForSun();
+
 		me.checkForGuidance();
 
 		me.canSeekerKeepUp();
@@ -1125,6 +1169,26 @@ var AIM = {
 		}
 	},
 
+	checkForSun: func () {
+		if (me.guidance == "heat" and me.sun_power > 0.6) {
+			# test for heat seeker locked on to sun
+			me.sun_dev_e = me.getPitch(me.coord, me.sun) - me.pitch;
+			me.sun_dev_h = me.coord.course_to(me.sun) - me.hdg;
+			while(me.sun_dev_h < -180) {
+				me.sun_dev_h += 360;
+			}
+			while(me.sun_dev_h > 180) {
+				me.sun_dev_h -= 360;
+			}
+			# now we check if the sun is behind the target, which is the direction the gyro seeker is pointed at:
+			if (math.abs(me.sun_dev_e-me.curr_deviation_e) < me.sun_lock and math.abs(me.sun_dev_h-me.curr_deviation_h) < me.sun_lock) {
+				print(me.type~": Locked onto sun, lost target. ");
+				me.lock_on_sun = TRUE;
+				me.free = TRUE;
+			}
+		}
+	},
+
 	checkForGuidance: func () {#GCD
 		if(me.speed_m < me.min_speed_for_guiding) {
 			# it doesn't guide at lower speeds
@@ -1140,10 +1204,18 @@ var AIM = {
 				print(me.type~": Not guiding (lost radar reflection, trying to reaquire)");
 			}
 			me.semiLostLock = TRUE;
-		} elsif ((me.curr_deviation_e > me.max_seeker_dev or me.curr_deviation_e < (-1 * me.max_seeker_dev)
-			  or me.curr_deviation_h > me.max_seeker_dev or me.curr_deviation_h < (-1 * me.max_seeker_dev)) and me.guidance != "gps") {
+		} elsif ((math.abs(me.curr_deviation_e) > me.max_seeker_dev or math.abs(me.curr_deviation_h) > me.max_seeker_dev) and me.guidance != "gps") {
 			# target is not in missile seeker view anymore
-			print(me.type~": Target is not in missile seeker view anymore.");
+			if (me.curr_deviation_e > me.max_seeker_dev) {
+				me.viewLost = "Target is above seeker view.";
+			} elsif (me.curr_deviation_e < (-1 * me.max_seeker_dev)) {
+				me.viewLost = "Target is below seeker view. "~(me.dist_curr*M2NM)~" NM and "~((me.coord.alt()-me.t_coord.alt())*M2FT)~" ft diff.";
+			} elsif (me.curr_deviation_h > me.max_seeker_dev) {
+				me.viewLost = "Target is right of seeker view.";
+			} else {
+				me.viewLost = "Target is left of seeker view.";
+			}
+			print(me.type~": Target is not in missile seeker view anymore. "~me.viewLost);
 			me.free = TRUE;
 		} elsif (me.all_aspect == FALSE and me.rear_aspect() == FALSE) {
 			me.guiding = FALSE;
@@ -1179,7 +1251,7 @@ var AIM = {
 				#print(sprintf("last-elev=%.1f", me.last_deviation_e)~sprintf(" last-elev-adj=%.1f", me.last_track_e));
 				#print(sprintf("last-head=%.1f", me.last_deviation_h)~sprintf(" last-head-adj=%.1f", me.last_track_h));
 				# lost lock due to angular speed limit
-				printf("%s: %.1f deg/s too big angular change for seeker head.", me.type, me.deviation_per_sec);
+				printf("%s: %.1f deg/s too fast angular change for seeker head.", me.type, me.deviation_per_sec);
 				me.free = TRUE;
 			}
 		}
@@ -1298,7 +1370,7 @@ var AIM = {
 				me.dive_token = TRUE;
 				#print("Is last turn, APN takes it from here..")
 			}
-		} elsif (me.coord.alt() > me.Tgt.get_Coord().alt() and me.last_cruise_or_loft == TRUE
+		} elsif (me.coord.alt() > me.t_coord.alt() and me.last_cruise_or_loft == TRUE
 		         and me.absolutePitch > -25 and me.dist_curr * M2NM > 10) {
 			# cruising: keeping altitude since target is below and more than -45 degs down
 
@@ -1343,8 +1415,8 @@ var AIM = {
 				me.apn = 1;
 			}
 
-			me.horz_closing_rate_fps = me.clamp(((me.dist_last - me.dist_curr)*M2FT)/me.dt, 1, 1000000);#clamped due to cruise missiles that can fly slower than target.
-			#printf("Horz closing rate: %5d", horz_closing_rate_fps);
+			me.horz_closing_rate_fps = me.clamp(((me.dist_last - me.dist_curr)*M2FT)/me.dt, 0.1, 1000000);#clamped due to cruise missiles that can fly slower than target.
+			#printf("Horz closing rate: %5d ft/sec", me.horz_closing_rate_fps);
 			me.proportionality_constant = 3;
 
 			me.c_dv = me.t_course-me.last_t_course;
@@ -1428,7 +1500,8 @@ var AIM = {
 				# augmented proportional navigation for elevation #
 				###################################################
 				#print(me.navigation~" in fully control");
-				me.vert_closing_rate_fps = me.clamp(((me.dist_direct_last - me.dist_curr_direct)*M2FT)/me.dt,1,1000000);
+				me.vert_closing_rate_fps = me.clamp(((me.dist_direct_last - me.dist_curr_direct)*M2FT)/me.dt, 0.1, 1000000);
+				#printf("Vert closing rate: %5d ft/sec", me.vert_closing_rate_fps);
 				me.line_of_sight_rate_up_rps = (D2R*(me.t_elev_deg-me.last_t_elev_deg))/me.dt;
 
 				# calculate target acc as normal to LOS line: (up acc is positive)
@@ -1529,7 +1602,9 @@ var AIM = {
 		#var new_t_alt_m = me.t_coord.alt() + t_delta_alt_m;
 		#var t_dist_m  = me.direct_dist_m;
 
-		if (me.fooled == TRUE) {
+		if (me.lock_on_sun == TRUE) {
+			reason = "Locked onto sun.";
+		} elsif (me.fooled == TRUE) {
 			reason = "Fooled by flare.";
 		}
 		
@@ -1568,7 +1643,7 @@ var AIM = {
 		# Create impact coords from this previous relative position applied to target current coord.
 		#me.t_coord.apply_course_distance(t_bearing_deg, t_dist_m);
 		#me.t_coord.set_alt(new_t_alt_m);		
-		var wh_mass = event == "exploded"?me.weight_whead_lbs:0;#will report 0 mass if did not have time to arm
+		var wh_mass = event == "exploded"?me.weight_whead_lbm:0;#will report 0 mass if did not have time to arm
 		#print("FOX2: me.direct_dist_m = ",  me.direct_dist_m, " time ",getprop("sim/time/elapsed-sec"));
 		impact_report(me.coord, wh_mass, "munition", me.type); # pos, alt, mass_slug,(speed_mps)
 
