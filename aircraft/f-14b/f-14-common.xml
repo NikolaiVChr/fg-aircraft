@@ -1305,72 +1305,72 @@
             <!-- the station offsets is used by the fox2.nas to fire the missiles from their correct positions, some of them needs to be updated -->
             <station n="1">
                 <offsets>
-                    <x-m>0.4795</x-m>
-                    <y-m>-3.6717</y-m>
-                    <z-m>-1.0600</z-m>
+                    <x-m type="double">0.4795</x-m>
+                    <y-m type="double">-3.6717</y-m>
+                    <z-m type="double">-1.0600</z-m>
                 </offsets>
             </station>
             <station n="2">
                 <offsets>
-                    <x-m>0.4795</x-m>
-                    <y-m>-3.2800</y-m>
-                    <z-m>-1.5700</z-m>
+                    <x-m type="double">0.4795</x-m>
+                    <y-m type="double">-3.2800</y-m>
+                    <z-m type="double">-1.5700</z-m>
                 </offsets>
             </station>
             <station n="3">
                 <offsets>
-                    <x-m>-2</x-m>
-                    <y-m>0</y-m>
-                    <z-m>-1.4333</z-m>
+                    <x-m type="double">-2</x-m>
+                    <y-m type="double">0</y-m>
+                    <z-m type="double">-1.4333</z-m>
                 </offsets>
             </station>
             <station n="4">
                 <offsets>
-                    <x-m>-2</x-m>
-                    <y-m>0</y-m>
-                    <z-m>-1.4333</z-m>
+                    <x-m type="double">-2</x-m>
+                    <y-m type="double">0</y-m>
+                    <z-m type="double">-1.4333</z-m>
                 </offsets>
             </station>
             <station n="5">
                 <offsets>
-                    <x-m>-2</x-m>
-                    <y-m>0</y-m>
-                    <z-m>-1.4333</z-m>
+                    <x-m type="double">-2</x-m>
+                    <y-m type="double">0</y-m>
+                    <z-m type="double">-1.4333</z-m>
                 </offsets>
             </station>
             <station n="6">
                 <offsets>
-                    <x-m>-2</x-m>
-                    <y-m>0</y-m>
-                    <z-m>-1.4333</z-m>
+                    <x-m type="double">-2</x-m>
+                    <y-m type="double">0</y-m>
+                    <z-m type="double">-1.4333</z-m>
                 </offsets>
             </station>
             <station n="7">
                 <offsets>
-                    <x-m>-2</x-m>
-                    <y-m>0</y-m>
-                    <z-m>-1.4333</z-m>
+                    <x-m type="double">-2</x-m>
+                    <y-m type="double">0</y-m>
+                    <z-m type="double">-1.4333</z-m>
                 </offsets>
             </station>
             <station n="8">
                 <offsets>
-                    <x-m>-2</x-m>
-                    <y-m>0</y-m>
-                    <z-m>-1.4333</z-m>
+                    <x-m type="double">-2</x-m>
+                    <y-m type="double">0</y-m>
+                    <z-m type="double">-1.4333</z-m>
                 </offsets>
             </station>
             <station n="9">
                 <offsets>
-                    <x-m>0.4795</x-m>
-                    <y-m>3.2800</y-m>
-                    <z-m>-1.5700</z-m>
+                    <x-m type="double">0.4795</x-m>
+                    <y-m type="double">3.2800</y-m>
+                    <z-m type="double">-1.5700</z-m>
                 </offsets>
             </station>
             <station n="10">
                 <offsets>
-                    <x-m>0.4795</x-m>
-                    <y-m>3.6717</y-m>
-                    <z-m>-1.0600</z-m>
+                    <x-m type="double">0.4795</x-m>
+                    <y-m type="double">3.6717</y-m>
+                    <z-m type="double">-1.0600</z-m>
                 </offsets>
             </station>
         </armament>
@@ -1856,13 +1856,21 @@
     <payload>                        
         <armament>
             <models type="string">Aircraft/f-14b/Models/Stores/</models>
+            <modelsUseCase type="bool">true</modelsUseCase>
+            <modelsUpperCase type="bool">true</modelsUpperCase>
             <pylon-offset type="int">1</pylon-offset>
             <pylon-stations>controls/armament</pylon-stations>
+            <station-name type="string">station</station-name>
+            <hit-interpolation type="bool">true</hit-interpolation>
+            <MP-lat type="string">rotors/main/blade[0]/flap-deg</MP-lat>
+            <MP-lon type="string">rotors/main/blade[1]/flap-deg</MP-lon>
+            <MP-alt type="string">rotors/main/blade[2]/flap-deg</MP-alt>
             <msg type="bool">false</msg>
             <damage type="bool">false</damage>
             <aim-9>             <!-- aim-9L sidewinder -->
                 <sound-on-off type="bool">false</sound-on-off>
                 <sound-volume type="double">0.0</sound-volume>
+                <sound-fire-on-off type="bool">false</sound-fire-on-off>
                 <vol-search type="double">0.075</vol-search>
                 <vol-track type="double">0.25</vol-track>
                 <vol-track-weak type="double">0.175</vol-track-weak>
@@ -1901,6 +1909,7 @@
             <aim-7>          <!-- aim-7f Sparrow -->
                 <sound-on-off type="bool">false</sound-on-off>
                 <sound-volume type="double">0.0</sound-volume>
+                <sound-fire-on-off type="bool">false</sound-fire-on-off>
                 <vol-search type="double">0.00</vol-search>
                 <vol-track type="double">0.20</vol-track>
                 <vol-track-weak type="double">0.10</vol-track-weak>
@@ -1933,6 +1942,7 @@
             <aim-54><!-- aim-54c Phoenix -->
                 <sound-on-off type="bool">false</sound-on-off>
                 <sound-volume type="double">0.0</sound-volume>
+                <sound-fire-on-off type="bool">false</sound-fire-on-off>
                 <vol-search type="double">0.0</vol-search>
                 <vol-track type="double">0.20</vol-track>
                 <vol-track-weak type="double">0.10</vol-track-weak>
