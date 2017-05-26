@@ -2099,6 +2099,7 @@
             </blade>
             <blade n="3">
                 <flap-deg type="double">0</flap-deg><!-- used for releasing flares -->
+                <position-deg type="double">0</position-deg><!-- used for releasing chaff -->
             </blade>
         </main>
     </rotors>
@@ -2165,7 +2166,7 @@
             <file>Aircraft/f-15/Nasal/blackout.nas</file>
         </blackout>
         <vector>
-            <file>Aircraft/JA37/Nasal/vector.nas</file>
+            <file>Aircraft/f-15/Nasal/vector.nas</file>
         </vector>
         <armament>
             <file>Aircraft/F-15/Nasal/fox2.nas</file>
