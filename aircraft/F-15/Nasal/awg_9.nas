@@ -107,7 +107,7 @@ our_ac_name = "f15c";
 # Done each 0.05 sec. Called from instruments.nas
 var rdr_loop = func() {
 	var display_rdr = DisplayRdr.getBoolValue();
-	if ( display_rdr ) {
+	if ( display_rdr and getprop("/instrumentation/radar/serviceable") == 1) {
 		az_scan();
 		our_radar_stanby = RadarStandby.getValue();
 #print ("Display radar ",our_radar_stanby, we_are_bs);
@@ -119,6 +119,7 @@ var rdr_loop = func() {
 		foreach( u; tgts_list ) {
 			u.set_display(0);
 		}
+        armament.contact = nil;
 	}
 }
 
@@ -241,6 +242,9 @@ active_u = nil; armament.contact = active_u;
             }
 
             var u = Target.new(c);
+            if (rcs.inRadarRange(u, 80, 3.2) == 0) {#APG-63(v1) = 80NM for 3.2 rcs (guesstimate)
+            #    continue;
+            }
             u_ecm_signal      = 0;
             u_ecm_signal_norm = 0;
             u_radar_standby   = 0;
@@ -1256,6 +1260,9 @@ else
     },
     get_Speed: func(){
         return me.get_TAS();
+    },
+    get_model: func {
+        return me.ModelType;
     },
 	list : [],
 };

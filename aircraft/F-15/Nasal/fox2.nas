@@ -659,21 +659,21 @@ var AIM = {
 		if (me.weight_fuel_lbm == nil) {
 			me.weight_fuel_lbm = 0;
 		}
-		var energy1 = me.force_lbf_1 * me.stage_1_duration;
-		var energy2 = me.force_lbf_2 * me.stage_2_duration;
-		var energyT = energy1 + energy2;
-		var fuel_per_energy = me.weight_fuel_lbm / energyT;
-		me.fuel_per_sec_1  = (fuel_per_energy * energy1) / me.stage_1_duration;
-		me.fuel_per_sec_2  = (fuel_per_energy * energy2) / me.stage_2_duration;
+		var impulse1 = me.force_lbf_1 * me.stage_1_duration; # lbf*s
+		var impulse2 = me.force_lbf_2 * me.stage_2_duration; # lbf*s
+		var impulseT = impulse1 + impulse2;                  # lbf*s
+		var fuel_per_impulse = me.weight_fuel_lbm / impulseT;# lbm/(lbf*s)
+		me.fuel_per_sec_1  = (fuel_per_impulse * impulse1) / me.stage_1_duration;# lbm/s
+		me.fuel_per_sec_2  = (fuel_per_impulse * impulse2) / me.stage_2_duration;# lbm/s
 
 		# find the sun:
 		if(me.guidance == "heat") {
 			var sun_x = getprop("ephemeris/sun/local/x");
-			var sun_y = getprop("ephemeris/sun/local/x");
-			var sun_z = getprop("ephemeris/sun/local/x");
+			var sun_y = getprop("ephemeris/sun/local/y");# unit vector pointing to sun in geocentric coords
+			var sun_z = getprop("ephemeris/sun/local/z");
 			me.sun_power = getprop("/rendering/scene/diffuse/red");
-			me.sun = geo.Coord.new(me.ac_init);
-			me.sun.set_xyz(me.sun.x()+sun_x*200000, me.sun.y()+sun_y*200000, me.sun.z()+sun_z*200000);#heat seeking missiles don't fly far, so setting it 200Km away is fine.
+			me.sun = geo.Coord.new();
+			me.sun.set_xyz(me.ac_init.x()+sun_x*200000, me.ac_init.y()+sun_y*200000, me.ac_init.z()+sun_z*200000);#heat seeking missiles don't fly far, so setting it 200Km away is fine.
 		}
 		me.lock_on_sun = FALSE;
 
@@ -2046,16 +2046,25 @@ var AIM = {
 	},
 
 	getPitch: func (coord1, coord2) {#GCD
-		#pitch from c1 to c2
-		  me.coord3 = geo.Coord.new(coord1);
-		  me.coord3.set_alt(coord2.alt());
-		  me.d12 = coord1.direct_distance_to(coord2);
-		  me.d32 = me.coord3.direct_distance_to(coord2);
-		  if (me.d12 > 0.1 and coord1.alt() != coord2.alt()) {
-		  	me.altDi = coord1.alt()-me.coord3.alt();
-		  	me.yyy = R2D * math.acos((math.pow(me.d12, 2)+math.pow(me.altDi,2)-math.pow(me.d32, 2))/(2 * me.d12 * me.altDi));
-		  	me.pitchC = -1* (90 - me.yyy);
-		  	return me.pitchC;
+		#pitch from coord1 to coord2 in degrees (takes curvature of earth into effect.)
+		if (coord1.lat() == coord2.lat() and coord1.lon() == coord2.lon()) {
+	        if (coord2.alt() > coord1.alt()) {
+	          return 90;
+	        } elsif (coord2.alt() < coord1.alt()) {
+	          return -90;
+	        } else {
+	          return 0;
+	        }
+	    }
+		me.coord3 = geo.Coord.new(coord1);
+		me.coord3.set_alt(coord2.alt());
+		me.d12 = coord1.direct_distance_to(coord2);
+		if (me.d12 > 0.1 and coord1.alt() != coord2.alt()) {# this triangle method dont work with same altitudes.
+			me.d32 = me.coord3.direct_distance_to(coord2);
+			me.altDi = coord1.alt()-me.coord3.alt();
+			me.yyy = R2D * math.acos((math.pow(me.d12, 2)+math.pow(me.altDi,2)-math.pow(me.d32, 2))/(2 * me.d12 * me.altDi));
+			me.pitchC = -1* (90 - me.yyy);
+			return me.pitchC;
 	  	} else{
 	  		# arccos wont like if the coord are the same
 	  		return 0;
