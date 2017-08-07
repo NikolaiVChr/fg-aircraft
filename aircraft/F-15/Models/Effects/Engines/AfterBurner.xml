@@ -24,7 +24,12 @@ ref: https://www.youtube.com/watch?v=ZC_DIf5SSmM
         <augmentation-alight>sim/multiplay/generic/int[8]</augmentation-alight>
         <augmentation-ignition>sim/multiplay/generic/float[8]</augmentation-ignition>
     </params>
-
+<!--
+    <model>
+        <path>als-flame.xml</path>
+        <name>ALS-FlameTrail</name>
+    </model>
+-->
     <offsets>
         <z-m>0.0</z-m>
     </offsets>
